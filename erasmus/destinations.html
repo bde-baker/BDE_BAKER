@@ -19,6 +19,7 @@
       border-radius: 4px;
       overflow: hidden;
       border: 1px solid #e2d8ea;
+      background: #eef4fa;
       cursor: grab;
       touch-action: none;
       user-select: none;
@@ -29,14 +30,68 @@
       width: 100%;
       transform-origin: 0 0;
       will-change: transform;
+      line-height: 0;
     }
-    #mapInner img {
+    #mapInner svg {
       display: block;
       width: 100%;
       height: auto;
       pointer-events: none;
-      -webkit-user-drag: none;
     }
+    /* Habillage du fond de carte vectoriel */
+    #mapInner svg path {
+      fill: #e3dcec;
+      stroke: #b9a8cf;
+      stroke-width: 0.6;
+    }
+    #mapInner svg path.highlight {
+      fill: var(--purple);
+    }
+    .pin {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50% 50% 50% 0;
+      transform: translate(-50%, -100%) rotate(-45deg);
+      cursor: pointer;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.25);
+      border: 2px solid #fff;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .pin.ready { opacity: 1; }
+    .pin:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
+    .pin.active { box-shadow: 0 0 0 3px rgba(0,0,90,0.35); }
+    #panel {
+      flex: 1;
+      min-width: 260px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      padding: 16px;
+      box-shadow: 3px 5px 0 rgba(138,92,160,0.2);
+    }
+    #panelTitle {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--purple);
+    }
+    #panelList {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .company-card {
+      border: 1px solid #eee;
+      border-radius: 2px;
+      padding: 10px;
+      background: #faf8fb;
+    }
+    .company-name { font-weight: 700; font-size: 13px; color: var(--navy); }
+    .company-desc { font-size: 12px; color: var(--navy); margin-top: 4px; line-height: 1.4; }
+
     .map-controls {
       position: absolute;
       top: 10px;
@@ -59,48 +114,6 @@
       color: var(--navy);
     }
     .map-controls button:hover { background: #f4f0f7; }
-    .pin {
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      border-radius: 50% 50% 50% 0;
-      transform: translate(-50%, -100%) rotate(-45deg);
-      cursor: pointer;
-      box-shadow: 2px 2px 0 rgba(0,0,0,0.25);
-      border: 2px solid #fff;
-      padding: 0;
-    }
-    .pin:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
-    .pin.active { box-shadow: 0 0 0 3px rgba(0,0,90,0.35); }
-    #panel {
-      flex: 1;
-      min-width: 260px;
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 4px;
-      padding: 16px;
-      box-shadow: 3px 5px 0 rgba(138,92,160,0.2);
-    }
-    #panelTitle {
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--purple);
-      text-transform: capitalize;
-    }
-    #panelList {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .company-card {
-      border: 1px solid #eee;
-      border-radius: 2px;
-      padding: 10px;
-      background: #faf8fb;
-    }
-    .company-name { font-weight: 700; font-size: 13px; color: var(--navy); }
-    .company-desc { font-size: 12px; color: var(--navy); margin-top: 4px; line-height: 1.4; }
 
     /* Version mobile : liste de pays dépliable au lieu de la carte */
     .dest-mobile-list { display: none; }
@@ -171,25 +184,25 @@
   <main class="container">
 
     <div class="page-title">destinations</div>
-    <div class="page-subtitle">clique sur une punaise pour découvrir les entreprises partenaires du pays.</div>
+    <div class="page-subtitle">clique sur une punaise pour découvrir les entreprises partenaires du pays. zoome, dézoome, et déplace-toi sur la carte.</div>
 
-    <!-- Desktop : carte du monde avec punaises -->
+    <!-- Desktop : carte vectorielle avec punaises -->
     <div class="dest-layout">
       <div id="board">
         <div id="mapInner">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/BlankMap-World-Equirectangular.svg" alt="Carte du monde" width="940" height="477">
+          <!-- La carte SVG vectorielle est injectée ici en JavaScript -->
 
-          <button class="pin" data-country="allemagne" style="top:20.8%; left:53.7%; background:var(--purple);" aria-label="Allemagne"></button>
-          <button class="pin" data-country="angleterre" style="top:21.4%; left:50.0%; background:var(--pink);" aria-label="Angleterre"></button>
-          <button class="pin" data-country="belgique" style="top:21.7%; left:51.2%; background:var(--blue);" aria-label="Belgique"></button>
-          <button class="pin" data-country="espagne" style="top:27.5%; left:49.0%; background:var(--lime);" aria-label="Espagne"></button>
-          <button class="pin" data-country="finlande" style="top:16.6%; left:56.9%; background:var(--orange);" aria-label="Finlande"></button>
-          <button class="pin" data-country="hongkong" style="top:37.6%; left:81.7%; background:var(--green);" aria-label="Hong Kong"></button>
-          <button class="pin" data-country="irlande" style="top:20.4%; left:48.3%; background:var(--purple);" aria-label="Irlande"></button>
-          <button class="pin" data-country="italie" style="top:26.7%; left:53.5%; background:var(--pink);" aria-label="Italie"></button>
-          <button class="pin" data-country="mexique" style="top:39.2%; left:22.5%; background:var(--blue);" aria-label="Mexique"></button>
-          <button class="pin" data-country="norvege" style="top:16.7%; left:53.0%; background:var(--lime);" aria-label="Norvège"></button>
-          <button class="pin" data-country="paysbas" style="top:20.9%; left:51.4%; background:var(--orange);" aria-label="Pays-Bas"></button>
+          <button class="pin" data-country="allemagne" style="background:var(--purple);" aria-label="Allemagne"></button>
+          <button class="pin" data-country="angleterre" style="background:var(--pink);" aria-label="Angleterre"></button>
+          <button class="pin" data-country="belgique" style="background:var(--blue);" aria-label="Belgique"></button>
+          <button class="pin" data-country="espagne" style="background:var(--lime);" aria-label="Espagne"></button>
+          <button class="pin" data-country="finlande" style="background:var(--orange);" aria-label="Finlande"></button>
+          <button class="pin" data-country="hongkong" style="background:var(--green);" aria-label="Hong Kong"></button>
+          <button class="pin" data-country="irlande" style="background:var(--purple);" aria-label="Irlande"></button>
+          <button class="pin" data-country="italie" style="background:var(--pink);" aria-label="Italie"></button>
+          <button class="pin" data-country="mexique" style="background:var(--blue);" aria-label="Mexique"></button>
+          <button class="pin" data-country="norvege" style="background:var(--lime);" aria-label="Norvège"></button>
+          <button class="pin" data-country="paysbas" style="background:var(--orange);" aria-label="Pays-Bas"></button>
         </div>
 
         <div class="map-controls">
@@ -271,89 +284,171 @@
   <script src="../js/script.js"></script>
   <script>
     (function () {
+      // ---- Données des pays et entreprises partenaires ----
       var data = {
-        allemagne: {
-          label: "Allemagne",
-          companies: [
-            { name: "Berlin Werk", desc: "Studio de design graphique et identité visuelle, forte culture typographique." },
-            { name: "MünchenLabs", desc: "Bureau d'innovation produit, collabore avec des écoles de design locales." }
-          ]
-        },
-        angleterre: {
-          label: "Angleterre",
-          companies: [
-            { name: "Shoreditch Studio", desc: "Agence de design digital basée à Londres, forte culture branding." },
-            { name: "Northline Design", desc: "Studio spécialisé en design éditorial et packaging." }
-          ]
-        },
-        belgique: {
-          label: "Belgique",
-          companies: [
-            { name: "Bruxelles Atelier", desc: "Collectif de designers indépendants, projets culturels et associatifs." }
-          ]
-        },
-        espagne: {
-          label: "Espagne",
-          companies: [
-            { name: "Madrid Studio", desc: "Agence de design produit et mobilier contemporain." },
-            { name: "Barcelona Creative", desc: "Studio pluridisciplinaire, design d'espace et scénographie." }
-          ]
-        },
-        finlande: {
-          label: "Finlande",
-          companies: [
-            { name: "Helsinki Form", desc: "Studio de design nordique minimaliste, spécialisé en mobilier." }
-          ]
-        },
-        hongkong: {
-          label: "Hong Kong",
-          companies: [
-            { name: "Kowloon Design Lab", desc: "Studio de design produit tourné vers l'industrie électronique." },
-            { name: "Victoria Creative", desc: "Agence de design d'expérience et retail." }
-          ]
-        },
-        irlande: {
-          label: "Irlande",
-          companies: [
-            { name: "Dublin Craft Studio", desc: "Atelier mêlant artisanat traditionnel irlandais et design contemporain." }
-          ]
-        },
-        italie: {
-          label: "Italie",
-          companies: [
-            { name: "Milano Design Co.", desc: "Studio historique de design d'objet, propose des stages courts." },
-            { name: "Torino Creative", desc: "Agence pluridisciplinaire, design & communication." }
-          ]
-        },
-        mexique: {
-          label: "Mexique",
-          companies: [
-            { name: "CDMX Estudio", desc: "Studio de design textile et artisanat contemporain mexicain." }
-          ]
-        },
-        norvege: {
-          label: "Norvège",
-          companies: [
-            { name: "Oslo Form", desc: "Studio de design scandinave minimaliste, très sélectif." }
-          ]
-        },
-        paysbas: {
-          label: "Pays-Bas",
-          companies: [
-            { name: "Amsterdam Studio", desc: "Agence de design graphique et signalétique urbaine." },
-            { name: "Rotterdam Lab", desc: "Bureau d'architecture d'intérieur et design d'espace." }
-          ]
-        }
+        allemagne: { code: "de", label: "Allemagne", fallback: { lat: 51.0, lon: 10.0 }, companies: [
+          { name: "Berlin Werk", desc: "Studio de design graphique et identité visuelle, forte culture typographique." },
+          { name: "MünchenLabs", desc: "Bureau d'innovation produit, collabore avec des écoles de design locales." }
+        ]},
+        angleterre: { code: "gb", label: "Angleterre", fallback: { lat: 51.5, lon: -0.13 }, companies: [
+          { name: "Shoreditch Studio", desc: "Agence de design digital basée à Londres, forte culture branding." },
+          { name: "Northline Design", desc: "Studio spécialisé en design éditorial et packaging." }
+        ]},
+        belgique: { code: "be", label: "Belgique", fallback: { lat: 50.85, lon: 4.35 }, companies: [
+          { name: "Bruxelles Atelier", desc: "Collectif de designers indépendants, projets culturels et associatifs." }
+        ]},
+        espagne: { code: "es", label: "Espagne", fallback: { lat: 40.42, lon: -3.7 }, companies: [
+          { name: "Madrid Studio", desc: "Agence de design produit et mobilier contemporain." },
+          { name: "Barcelona Creative", desc: "Studio pluridisciplinaire, design d'espace et scénographie." }
+        ]},
+        finlande: { code: "fi", label: "Finlande", fallback: { lat: 60.17, lon: 24.94 }, companies: [
+          { name: "Helsinki Form", desc: "Studio de design nordique minimaliste, spécialisé en mobilier." }
+        ]},
+        hongkong: { code: "hk", label: "Hong Kong", fallback: { lat: 22.32, lon: 114.17 }, companies: [
+          { name: "Kowloon Design Lab", desc: "Studio de design produit tourné vers l'industrie électronique." },
+          { name: "Victoria Creative", desc: "Agence de design d'expérience et retail." }
+        ]},
+        irlande: { code: "ie", label: "Irlande", fallback: { lat: 53.35, lon: -6.26 }, companies: [
+          { name: "Dublin Craft Studio", desc: "Atelier mêlant artisanat traditionnel irlandais et design contemporain." }
+        ]},
+        italie: { code: "it", label: "Italie", fallback: { lat: 41.9, lon: 12.5 }, companies: [
+          { name: "Milano Design Co.", desc: "Studio historique de design d'objet, propose des stages courts." },
+          { name: "Torino Creative", desc: "Agence pluridisciplinaire, design & communication." }
+        ]},
+        mexique: { code: "mx", label: "Mexique", fallback: { lat: 19.43, lon: -99.13 }, companies: [
+          { name: "CDMX Estudio", desc: "Studio de design textile et artisanat contemporain mexicain." }
+        ]},
+        norvege: { code: "no", label: "Norvège", fallback: { lat: 59.91, lon: 10.75 }, companies: [
+          { name: "Oslo Form", desc: "Studio de design scandinave minimaliste, très sélectif." }
+        ]},
+        paysbas: { code: "nl", label: "Pays-Bas", fallback: { lat: 52.37, lon: 4.9 }, companies: [
+          { name: "Amsterdam Studio", desc: "Agence de design graphique et signalétique urbaine." },
+          { name: "Rotterdam Lab", desc: "Bureau d'architecture d'intérieur et design d'espace." }
+        ]}
       };
 
       var panelTitle = document.getElementById('panelTitle');
       var panelList = document.getElementById('panelList');
 
+      function renderDesktop(country) {
+        panelTitle.textContent = data[country].label;
+        panelList.innerHTML = '';
+        data[country].companies.forEach(function (company) {
+          var card = document.createElement('div');
+          card.className = 'company-card';
+          var name = document.createElement('div');
+          name.className = 'company-name';
+          name.textContent = company.name;
+          var desc = document.createElement('div');
+          desc.className = 'company-desc';
+          desc.textContent = company.desc;
+          card.appendChild(name);
+          card.appendChild(desc);
+          panelList.appendChild(card);
+        });
+      }
+
+      document.querySelectorAll('.pin').forEach(function (pin) {
+        pin.addEventListener('click', function () {
+          document.querySelectorAll('.pin').forEach(function (p) { p.classList.remove('active'); });
+          pin.classList.add('active');
+          renderDesktop(pin.getAttribute('data-country'));
+        });
+      });
+
+      // Version mobile : liste dépliable générée à partir des mêmes données
+      var mobileList = document.getElementById('mobileList');
+      Object.keys(data).forEach(function (country) {
+        var item = document.createElement('div');
+        item.className = 'country-item';
+
+        var header = document.createElement('div');
+        header.style.cssText = 'display:flex; justify-content:space-between; align-items:center;';
+        var label = document.createElement('div');
+        label.style.cssText = 'font-weight:700; font-size:13px;';
+        label.textContent = data[country].label;
+        var arrow = document.createElement('div');
+        arrow.style.cssText = 'font-size:12px; color:var(--purple);';
+        arrow.textContent = '▾';
+        header.appendChild(label);
+        header.appendChild(arrow);
+
+        var companiesDiv = document.createElement('div');
+        companiesDiv.className = 'companies';
+        data[country].companies.forEach(function (company) {
+          var name = document.createElement('div');
+          name.style.cssText = 'font-weight:700; font-size:12px;';
+          name.textContent = company.name;
+          var desc = document.createElement('div');
+          desc.style.cssText = 'font-size:11px; margin-top:2px; margin-bottom:8px;';
+          desc.textContent = company.desc;
+          companiesDiv.appendChild(name);
+          companiesDiv.appendChild(desc);
+        });
+
+        item.appendChild(header);
+        item.appendChild(companiesDiv);
+        item.addEventListener('click', function () {
+          item.classList.toggle('open');
+          arrow.textContent = item.classList.contains('open') ? '▴' : '▾';
+        });
+        mobileList.appendChild(item);
+      });
+
+      // ---- Chargement de la carte vectorielle et placement précis des punaises ----
+      var mapInner = document.getElementById('mapInner');
+
+      fetch('https://cdn.jsdelivr.net/gh/flekschas/simple-world-map@master/world-map.svg')
+        .then(function (res) { return res.text(); })
+        .then(function (svgText) {
+          mapInner.insertAdjacentHTML('afterbegin', svgText);
+          var svg = mapInner.querySelector('svg');
+          if (!svg) return;
+
+          // Récupère les dimensions réelles du viewBox pour les pays sans tracé dédié (ex: Hong Kong)
+          var vb = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+            ? svg.viewBox.baseVal
+            : { x: 0, y: 0, width: svg.width.baseVal.value, height: svg.height.baseVal.value };
+
+          Object.keys(data).forEach(function (country) {
+            var pin = document.querySelector('.pin[data-country="' + country + '"]');
+            var path = svg.getElementById(data[country].code);
+            var xPct, yPct;
+
+            if (path) {
+              path.classList.add('highlight');
+              var bbox = path.getBBox();
+              var cx = bbox.x + bbox.width / 2;
+              var cy = bbox.y + bbox.height / 2;
+              xPct = ((cx - vb.x) / vb.width) * 100;
+              yPct = ((cy - vb.y) / vb.height) * 100;
+            } else {
+              // Pas de tracé dédié (ex: Hong Kong) : on retombe sur les coordonnées géographiques
+              var fb = data[country].fallback;
+              xPct = ((fb.lon + 180) / 360) * 100;
+              yPct = ((90 - fb.lat) / 180) * 100;
+            }
+
+            pin.style.left = xPct + '%';
+            pin.style.top = yPct + '%';
+            pin.classList.add('ready');
+          });
+        })
+        .catch(function () {
+          // En cas d'échec de chargement, on affiche quand même les punaises avec une position approximative
+          Object.keys(data).forEach(function (country) {
+            var pin = document.querySelector('.pin[data-country="' + country + '"]');
+            var fb = data[country].fallback;
+            pin.style.left = (((fb.lon + 180) / 360) * 100) + '%';
+            pin.style.top = (((90 - fb.lat) / 180) * 100) + '%';
+            pin.classList.add('ready');
+          });
+        });
+
       // ---- Zoom & déplacement de la carte ----
       var board = document.getElementById('board');
-      var mapInner = document.getElementById('mapInner');
       var zoom = 1, panX = 0, panY = 0;
-      var minZoom = 1, maxZoom = 5;
+      var minZoom = 1, maxZoom = 6;
 
       function applyTransform() {
         mapInner.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoom + ')';
@@ -483,71 +578,6 @@
 
       board.addEventListener('touchend', function () {
         isDragging = false;
-      });
-
-      function renderDesktop(country) {
-        panelTitle.textContent = data[country].label;
-        panelList.innerHTML = '';
-        data[country].companies.forEach(function (company) {
-          var card = document.createElement('div');
-          card.className = 'company-card';
-          var name = document.createElement('div');
-          name.className = 'company-name';
-          name.textContent = company.name;
-          var desc = document.createElement('div');
-          desc.className = 'company-desc';
-          desc.textContent = company.desc;
-          card.appendChild(name);
-          card.appendChild(desc);
-          panelList.appendChild(card);
-        });
-      }
-
-      document.querySelectorAll('.pin').forEach(function (pin) {
-        pin.addEventListener('click', function () {
-          document.querySelectorAll('.pin').forEach(function (p) { p.classList.remove('active'); });
-          pin.classList.add('active');
-          renderDesktop(pin.getAttribute('data-country'));
-        });
-      });
-
-      // Version mobile : liste dépliable générée à partir des mêmes données
-      var mobileList = document.getElementById('mobileList');
-      Object.keys(data).forEach(function (country) {
-        var item = document.createElement('div');
-        item.className = 'country-item';
-
-        var header = document.createElement('div');
-        header.style.cssText = 'display:flex; justify-content:space-between; align-items:center;';
-        var label = document.createElement('div');
-        label.style.cssText = 'font-weight:700; font-size:13px;';
-        label.textContent = data[country].label;
-        var arrow = document.createElement('div');
-        arrow.style.cssText = 'font-size:12px; color:var(--purple);';
-        arrow.textContent = '▾';
-        header.appendChild(label);
-        header.appendChild(arrow);
-
-        var companiesDiv = document.createElement('div');
-        companiesDiv.className = 'companies';
-        data[country].companies.forEach(function (company) {
-          var name = document.createElement('div');
-          name.style.cssText = 'font-weight:700; font-size:12px;';
-          name.textContent = company.name;
-          var desc = document.createElement('div');
-          desc.style.cssText = 'font-size:11px; margin-top:2px; margin-bottom:8px;';
-          desc.textContent = company.desc;
-          companiesDiv.appendChild(name);
-          companiesDiv.appendChild(desc);
-        });
-
-        item.appendChild(header);
-        item.appendChild(companiesDiv);
-        item.addEventListener('click', function () {
-          item.classList.toggle('open');
-          arrow.textContent = item.classList.contains('open') ? '▴' : '▾';
-        });
-        mobileList.appendChild(item);
       });
     })();
   </script>
