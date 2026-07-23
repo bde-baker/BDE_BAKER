@@ -334,7 +334,7 @@
         belgique: { code: "be", label: "Belgique", fallback: { lat: 50.85, lon: 4.35 }, companies: [
           { name: "Bruxelles Atelier", desc: "Collectif de designers indépendants, projets culturels et associatifs." }
         ]},
-        espagne: { code: "es", useFallback: true, label: "Espagne", fallback: { lat: 40.42, lon: -3.7 }, companies: [
+        espagne: { code: "es", label: "Espagne", fallback: { lat: 40.42, lon: -3.7 }, companies: [
           { name: "Madrid Studio", desc: "Agence de design produit et mobilier contemporain." },
           { name: "Barcelona Creative", desc: "Studio pluridisciplinaire, design d'espace et scénographie." }
         ]},
@@ -505,6 +505,43 @@
         updateViewBox();
       }
 
+      // Un tracé de pays peut contenir plusieurs sous-tracés disjoints (ex : la péninsule
+      // espagnole + les îles Canaries). On isole chaque sous-tracé et on garde celui dont
+      // la boîte englobante est la plus grande (le territoire principal), pour que la
+      // punaise tombe dessus plutôt qu'au milieu de l'océan entre les deux.
+      function getMainlandCenter(pathEl, svgRoot) {
+        var d = pathEl.getAttribute('d') || '';
+        var subpaths = d.match(/[Mm][^Mm]*/g);
+
+        if (!subpaths || subpaths.length <= 1) {
+          var bbox = pathEl.getBBox();
+          return { cx: bbox.x + bbox.width / 2, cy: bbox.y + bbox.height / 2 };
+        }
+
+        var best = null;
+        var bestArea = -1;
+        subpaths.forEach(function (sub) {
+          var temp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          temp.setAttribute('d', sub);
+          temp.setAttribute('visibility', 'hidden');
+          svgRoot.appendChild(temp);
+          var bbox = null;
+          try { bbox = temp.getBBox(); } catch (e) { bbox = null; }
+          svgRoot.removeChild(temp);
+          if (bbox && bbox.width > 0 && bbox.height > 0) {
+            var area = bbox.width * bbox.height;
+            if (area > bestArea) {
+              bestArea = area;
+              best = { cx: bbox.x + bbox.width / 2, cy: bbox.y + bbox.height / 2 };
+            }
+          }
+        });
+
+        if (best) return best;
+        var fallbackBbox = pathEl.getBBox();
+        return { cx: fallbackBbox.x + fallbackBbox.width / 2, cy: fallbackBbox.y + fallbackBbox.height / 2 };
+      }
+
       fetch('https://cdn.jsdelivr.net/gh/flekschas/simple-world-map@master/world-map.svg')
         .then(function (res) { return res.text(); })
         .then(function (svgText) {
@@ -530,14 +567,10 @@
 
             if (path) {
               path.classList.add('highlight');
-            }
-
-            if (path && !data[country].useFallback) {
-              var bbox = path.getBBox();
-              countryPoints[country] = { cx: bbox.x + bbox.width / 2, cy: bbox.y + bbox.height / 2 };
+              countryPoints[country] = getMainlandCenter(path, svg);
             } else {
-              // Pas de tracé dédié (ex: Hong Kong), ou centre du tracé peu fiable (ex: Espagne à
-              // cause des îles Canaries) : coordonnées géographiques converties dans le repère du SVG
+              // Pas de tracé dédié (ex : Hong Kong) : coordonnées géographiques
+              // converties dans le repère du SVG
               countryPoints[country] = {
                 cx: fullVB.x + ((fbk.lon + 180) / 360) * fullVB.width,
                 cy: fullVB.y + ((90 - fbk.lat) / 180) * fullVB.height
