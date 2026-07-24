@@ -345,7 +345,7 @@
           { name: "Maison Dejardin", desc: "Artisant céramiste." },
           { name: "Kascen", desc: "Agence de design centré autour de l'expérience produite à un usager." }
         ]},
-        espagne: { code: "es", pinOverride: true, label: "Espagne", fallback: { lat: 10, lon: 4 }, companies: [
+        espagne: { code: "es", pinOverride: true, label: "Espagne", fallback: { lat: 40.4168, lon: -3.7038 }, companies: [
           { name: "Best Life Experience", desc: "Agence d'organisation d'événements ERASMUS." },
         ]},
         finlande: { code: "fi", label: "Finlande", fallback: { lat: 60.17, lon: 24.94 }, companies: [
@@ -570,6 +570,54 @@
           board.style.aspectRatio = vb.width + ' / ' + vb.height;
           svg.setAttribute('preserveAspectRatio', 'none');
 
+          // ---- Calibration lat/lon -> coordonnées SVG ----
+          // La carte n'est presque jamais un pur quadrillage -180/180° x -90/90° (recadrage,
+          // marges, projection légèrement différente). Plutôt que de le supposer, on calibre
+          // la conversion à partir de deux pays dont la position est déjà garantie exacte
+          // (leur vrai tracé sur CETTE carte), avec leurs coordonnées géographiques réelles.
+          var calibRefs = [
+            { code: "de", lat: 52.5200, lon: 13.4050 },  // Berlin
+            { code: "mx", lat: 19.4326, lon: -99.1332 }, // Mexico
+            { code: "gb", lat: 51.5074, lon: -0.1278 },  // Londres
+            { code: "it", lat: 41.9028, lon: 12.4964 }   // Rome
+          ];
+          var calibPoints = [];
+          calibRefs.forEach(function (ref) {
+            var p = svg.getElementById(ref.code);
+            if (p) {
+              var b = p.getBBox();
+              calibPoints.push({ lat: ref.lat, lon: ref.lon, cx: b.x + b.width / 2, cy: b.y + b.height / 2 });
+            }
+          });
+
+          var calib = null;
+          if (calibPoints.length >= 2) {
+            // Choisit la paire la plus écartée en longitude (axe X) et s'en sert aussi pour l'axe Y
+            var a = calibPoints[0], b2 = calibPoints[1], maxSpread = -1;
+            for (var i = 0; i < calibPoints.length; i++) {
+              for (var j = i + 1; j < calibPoints.length; j++) {
+                var spread = Math.abs(calibPoints[i].lon - calibPoints[j].lon);
+                if (spread > maxSpread) { maxSpread = spread; a = calibPoints[i]; b2 = calibPoints[j]; }
+              }
+            }
+            var scaleX = (b2.cx - a.cx) / (b2.lon - a.lon);
+            var offsetX = a.cx - scaleX * a.lon;
+            var scaleY = (b2.cy - a.cy) / (b2.lat - a.lat);
+            var offsetY = a.cy - scaleY * a.lat;
+            calib = { scaleX: scaleX, offsetX: offsetX, scaleY: scaleY, offsetY: offsetY };
+          }
+
+          function geoToSvg(lat, lon) {
+            if (calib) {
+              return { cx: calib.offsetX + calib.scaleX * lon, cy: calib.offsetY + calib.scaleY * lat };
+            }
+            // Repli si la calibration échoue : hypothèse d'un quadrillage complet -180/180°, -90/90°
+            return {
+              cx: fullVB.x + ((lon + 180) / 360) * fullVB.width,
+              cy: fullVB.y + ((90 - lat) / 180) * fullVB.height
+            };
+          }
+
           Object.keys(data).forEach(function (country) {
             var path = svg.getElementById(data[country].code);
             var fbk = data[country].fallback;
@@ -582,11 +630,8 @@
               countryPoints[country] = getMainlandCenter(path, svg);
             } else {
               // Pas de tracé dédié (ex : Hong Kong), ou position forcée sur des coordonnées
-              // géographiques précises (ex : Espagne → Madrid) : conversion dans le repère du SVG
-              countryPoints[country] = {
-                cx: fullVB.x + ((fbk.lon + 180) / 360) * fullVB.width,
-                cy: fullVB.y + ((90 - fbk.lat) / 180) * fullVB.height
-              };
+              // géographiques précises (ex : Espagne → Madrid) : conversion calibrée sur la carte
+              countryPoints[country] = geoToSvg(fbk.lat, fbk.lon);
             }
           });
 
