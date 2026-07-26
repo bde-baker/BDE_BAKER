@@ -410,3 +410,64 @@ button:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* =========================================================
+   Header / footer plus compacts en mobile uniquement
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .site-header {
+    padding: 1rem 0 0;
+  }
+
+  .brand img {
+    height: 38px;
+  }
+
+  .brand-name {
+    font-size: 17px;
+  }
+
+  .burger-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+
+  .nav-divider {
+    height: 2px;
+    margin-top: 10px;
+  }
+
+  .site-footer {
+    margin-top: 2.5rem;
+    padding: 1.6rem 0 1.4rem;
+  }
+
+  .footer-grid {
+    gap: 20px;
+  }
+
+  .footer-col img {
+    height: 44px !important;
+  }
+
+  .footer-col h3 {
+    font-size: 12px;
+  }
+
+  .footer-links {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .social-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .footer-legal {
+    font-size: 11px;
+  }
+}
