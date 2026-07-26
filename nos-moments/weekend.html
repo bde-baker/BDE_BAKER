@@ -8,16 +8,16 @@
   <style>
     .programme-row {
       display: flex;
-      gap: 16px;
+      gap: 18px;
       margin-top: 1rem;
       flex-wrap: wrap;
     }
     .programme-card {
-      width: 200px;
+      width: 240px;
     }
     .section-heading {
       font-weight: 700;
-      font-size: 16px;
+      font-size: 19px;
       color: var(--purple);
       margin-top: 2.5rem;
       border-bottom: 2px dashed var(--purple);
@@ -38,6 +38,21 @@
       display: block;
       border-radius: 2px;
       cursor: pointer;
+    }
+    @media (max-width: 760px) {
+      .programme-row {
+        justify-content: center;
+        text-align: center;
+      }
+      .programme-card {
+        width: 100%;
+        max-width: 320px;
+      }
+      .souvenirs-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: 160px;
+        gap: 10px;
+      }
     }
     #lightbox {
       display: none;
@@ -67,7 +82,7 @@
       border: none;
       background: rgba(255,255,255,0.9);
       font-weight: 700;
-      font-size: 18px;
+      font-size: 20px;
       cursor: pointer;
     }
     .lightbox-nav {
@@ -80,7 +95,7 @@
       border: none;
       background: rgba(255,255,255,0.9);
       font-weight: 700;
-      font-size: 22px;
+      font-size: 25px;
       cursor: pointer;
     }
     #lightboxPrev { left: 18px; }
@@ -160,7 +175,7 @@
     </div>
 
      <div style="position:relative; margin-top:2.2rem; transform:rotate(-1deg); display:block; width:max-content; max-width:100%;">
-      <div style="background:var(--pink); color:#fff; font-weight:700; font-size:15px; padding:14px 18px; border-radius:2px; box-shadow:3px 5px 0 rgba(74,90,16,0.25); max-width:520px;">
+      <div style="background:var(--pink); color:#fff; font-weight:700; font-size: 17px; padding:16px 20px; border-radius:2px; box-shadow:3px 5px 0 rgba(74,90,16,0.25); max-width:540px; line-height:1.5;">
         Nous mettons aussi plusieurs objets afin de faire de la prévention pendant nos soirées grâce à Avenir Santé (préservatifs, ethylotests, bouchons d'oreilles, ...).
       </div>
     </div>
@@ -200,7 +215,7 @@
     </div>
 
     <div style="position:relative; margin-top:2.2rem; transform:rotate(-1deg); display:inline-block;">
-      <div style="background:var(--lime); color:#4a5a10; font-weight:700; font-size:15px; padding:14px 18px; border-radius:2px; box-shadow:3px 5px 0 rgba(74,90,16,0.25); max-width:520px;">
+      <div style="background:var(--lime); color:#4a5a10; font-weight:700; font-size: 18px; padding:14px 18px; border-radius:2px; box-shadow:3px 5px 0 rgba(74,90,16,0.25); max-width:520px;">
         Infos pratiques — inscriptions ouvertes jusqu'au 10/09, participation à prix libre selon les moyens. prévoir sac de couchage, bonne humeur, et rien d'autre.
       </div>
     </div>
@@ -219,8 +234,8 @@
       <div class="footer-grid">
 
         <div class="footer-col">
-          <img src="../images/logo/logo-bde-baker.png" alt="Logo BDE Baker" style="height:60px; transform:rotate(-3deg);">
-          <div style="font-style:italic; font-size:12px; margin-top:8px; max-width:200px;">La vie de bde baker, page après page.</div>
+          <img src="../images/logo/logo-bde-baker.png" alt="Logo BDE Baker" style="height:68px; transform:rotate(-3deg);">
+          <div style="font-style:italic; font-size: 14px; margin-top:8px; max-width:200px;">La vie de bde baker, page après page.</div>
         </div>
 
         <div class="footer-col">
@@ -243,11 +258,11 @@
 
         <div class="footer-col" style="flex:1.4;">
           <h3>UNE QUESTION ?</h3>
-          <div style="font-style:italic; font-size:13px; margin-top:10px; line-height:1.5;">
+          <div style="font-style:italic; font-size: 17px; margin-top:10px; line-height:1.5;">
             Écris-nous, on répond (presque) toujours.<br>
             <span style="font-weight:700; font-style:normal;">bde.mad.rivegauche@gmail.com</span>
           </div>
-          <div style="font-size:12px; margin-top:10px; line-height:1.5;">
+          <div style="font-size: 14px; margin-top:10px; line-height:1.5;">
             Lycée Polyvalent Joséphine Baker<br>
             85 avenue Jean Baylet<br>
             31100 Toulouse
