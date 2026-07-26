@@ -299,11 +299,6 @@ button:focus-visible,
   display: block;
 }
 
-.collage-photo {
-  height: 90px;
-  border-radius: 2px;
-}
-
 .collage-label {
   font-family: var(--font-body);
   font-weight: 700;
@@ -401,10 +396,10 @@ button:focus-visible,
 .rotate-1  { transform: rotate(1deg); }
 
 .collage-photo {
-  height: 90px;
+  aspect-ratio: 1 / 1;
   border-radius: 2px;
   width: 100%;
-  object-fit: cover;   /* ← à ajouter : recadre l'image proprement */
+  object-fit: cover;
 }
 
 @media (prefers-reduced-motion: reduce) {
