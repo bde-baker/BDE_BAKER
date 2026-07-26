@@ -21,11 +21,13 @@
     .res-section:last-child { border-bottom: none; }
     .res-text { flex: 1; min-width: 260px; }
     .res-photo {
-      width: 150px;
-      height: 110px;
+      width: 260px;
+      height: 190px;
       border-radius: 2px;
       flex-shrink: 0;
       overflow: hidden;
+      align-self: center;
+      margin: 0 auto;
     }
     .res-photo img {
       width: 100%;
@@ -51,10 +53,10 @@
     }
     .res-body { font-size: 17px; margin-top: 10px; line-height: 1.7; max-width: 480px; }
 
-    .crous-board { position: relative; height: 360px; margin-top: 16px; }
+    .crous-board { position: relative; height: 440px; margin-top: 16px; }
     .crous-center {
       position: absolute;
-      top: 145px; left: 50%;
+      top: 160px; left: 50%;
       width: 120px; height: 120px;
       border-radius: 50%;
       background: var(--purple);
@@ -65,13 +67,13 @@
     .crous-center span { font-weight: 700; font-size: 19px; color: #fff; }
     .crous-branch {
       position: absolute;
-      width: 220px;
+      width: 260px;
       background: #fff;
-      padding: 10px 12px;
+      padding: 14px 16px;
       border-radius: 2px;
     }
-    .crous-branch .b-title { font-weight: 700; font-size: 14px; letter-spacing: 0.04em; }
-    .crous-branch .b-text { font-size: 13px; margin-top: 5px; line-height: 1.4; }
+    .crous-branch .b-title { font-weight: 700; font-size: 17px; letter-spacing: 0.04em; }
+    .crous-branch .b-text { font-size: 17px; margin-top: 6px; line-height: 1.5; }
 
     @media (max-width: 700px) {
       .crous-board { height: auto; position: static; display: flex; flex-direction: column; gap: 10px; }
@@ -160,11 +162,6 @@
 
     <!-- CROUS -->
     <div class="res-section" style="display:block;">
-      <span class="res-label" style="background:var(--lime); color:#4a5a10; transform:rotate(2deg);">
-        <span class="tape" style="right:15%; transform:rotate(7deg);"></span>
-        CROUS
-      </span>
-
       <div class="crous-board">
         <div class="crous-center"><span>CROUS</span></div>
 
